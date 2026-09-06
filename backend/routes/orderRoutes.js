@@ -8,6 +8,6 @@ router.get("/", requireAdmin, getAllOrders)
 
 router.get("/:id", requireAdmin, getOrderById)
 
-router.post("/", requireAdmin, createOrder)
+router.post("/", createOrder)
 
 export default router
