@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AdminSidebar from "../components/AdminSidebar";
-import AdminTopBar from "../components/AdminTopBar";
+import AdminTopBar from "../components/AdminTopbar";
 import { Outlet } from "react-router-dom";
 import { Toaster } from "sonner"
 
