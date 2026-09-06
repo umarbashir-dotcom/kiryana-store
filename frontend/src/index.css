@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #F1EFE4;
+  --color-card: #FBFAF4;
+  --color-ink: #1C2321;
+  --color-inksoft: #5B6158;
+  --color-primary: #B8791A;
+  --color-primarydark: #8F5D14;
+  --color-green: #3F5B44;
+  --color-red: #A63D34;
+  --color-border: #DDD6C4;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --animate-marquee: marquee 22s linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* <style> */
+  @keyframes scale-in {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes draw-check {
+    from { stroke-dasharray: 24; stroke-dashoffset: 24; }
+    to { stroke-dasharray: 24; stroke-dashoffset: 0; }
+  }
+/* </style> */
+}
+

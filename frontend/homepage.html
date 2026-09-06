@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Barkat Kiryana — Homepage</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#F1EFE4',
+          card: '#FBFAF4',
+          ink: '#1C2321',
+          inksoft: '#5B6158',
+          primary: '#B8791A',
+          primarydark: '#8F5D14',
+          green: '#3F5B44',
+          red: '#A63D34',
+          border: '#DDD6C4',
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['IBM Plex Mono', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  .kh-marquee { animation: kh-scroll 22s linear infinite; }
+  .kh-marquee:hover { animation-play-state: paused; }
+  @keyframes kh-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+</style>
+</head>
+<body class="bg-bg text-ink font-body">
+
+<!--
+  COMPONENT BREAKDOWN — suggested split when you move this to React.
+  Names match what each block below is doing, so you can map 1:1.
+
+  <UtilityStrip />        top thin bar (location + phone)
+  <Navbar />               logo, search input, login link, cart button
+    └ <SearchInput />
+    └ <CartButton />
+  <Hero />                 headline + CTA buttons + emoji tile grid
+  <RateTicker />            "Aaj Ka Bhaav" scrolling price strip (signature element)
+  <CategoryFilter />       the pill row — needs local state for the active pill
+    └ <CategoryPill />
+  <ProductGrid />          maps over products
+    └ <ProductCard />       one card: image tile, tag, name, price, add-to-cart button
+  <TrustStrip />           three feature/benefit blocks
+  <Footer />
+
+  Icons below are plain inline SVG (same paths/style as the Lucide set
+  you referenced — stroke-based, 24x24, round caps) rather than a React
+  import, since this file has no build step to resolve that import
+  against. Once you're in React, swap these <svg> blocks for the real
+  `lucide-react` components 1:1 — same visual result either way.
+
+  Design tokens (colors/fonts) are registered in tailwind.config above
+  as named classes (bg-primary, text-inksoft, font-display, etc.) —
+  keep using those names in every component you split this into.
+-->
+
+<div class="min-h-screen w-full">
+
+  <!-- UtilityStrip -->
+  <div class="bg-ink text-xs text-white/80">
+    <div class="max-w-6xl mx-auto px-4 py-1.5 flex items-center justify-between">
+      <span class="flex items-center gap-1.5">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        Faisalabad
+      </span>
+      <span class="flex items-center gap-1.5">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.291 1.217 14 14 0 0 0 6.392 6.4Z"/></svg>
+        0300-0000000
+      </span>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="border-b border-border sticky top-0 z-20 backdrop-blur bg-bg/95">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="w-9 h-9 rounded-[10px] bg-primary flex items-center justify-center text-white">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.55 13H3.5a1 1 0 0 1-1-1.11l1.28-9A1 1 0 0 1 4.77 2h14.46a1 1 0 0 1 .99.89l1.28 9a1 1 0 0 1-1 1.11H15.55Z"/><path d="M4 13h16l-.7 6.29A2 2 0 0 1 17.31 21H6.7a2 2 0 0 1-2-1.71L4 13Z"/><path d="M9 9V6a3 3 0 1 1 6 0v3"/></svg>
+        </div>
+        <span class="font-display text-lg font-bold tracking-tight">Barkat Kiryana</span>
+      </div>
+
+      <!-- SearchInput -->
+      <div class="flex-1 max-w-md ml-2 hidden sm:flex items-center gap-2 bg-card border border-border rounded-[10px] px-3 py-2 focus-within:ring-2 focus-within:ring-primary/50 transition">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-inksoft shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="search" placeholder="Search rice, oil, biscuits..." class="bg-transparent outline-none text-sm w-full placeholder:text-inksoft" />
+      </div>
+
+      <div class="ml-auto flex items-center gap-3">
+        <a href="#" class="text-sm font-medium hidden sm:block hover:text-primary transition">Login</a>
+        <!-- CartButton -->
+        <button class="rounded-full bg-primary text-white text-sm font-medium px-4 py-2 flex items-center gap-2 hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.55 13H3.5a1 1 0 0 1-1-1.11l1.28-9A1 1 0 0 1 4.77 2h14.46a1 1 0 0 1 .99.89l1.28 9a1 1 0 0 1-1 1.11H15.55Z"/><path d="M4 13h16l-.7 6.29A2 2 0 0 1 17.31 21H6.7a2 2 0 0 1-2-1.71L4 13Z"/><path d="M9 9V6a3 3 0 1 1 6 0v3"/></svg>
+          Cart · 0
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center">
+    <div>
+      <span class="font-mono text-xs bg-[#E7DCC0] text-primarydark px-2.5 py-1 rounded-full inline-block mb-4">
+        your mohalla store, online
+      </span>
+      <h1 class="font-display text-4xl md:text-5xl font-bold leading-[1.08] mb-4">
+        Ration ki fikar chhodo,<br />hum sambhal lete hain.
+      </h1>
+      <p class="text-inksoft text-base mb-6 max-w-md">
+        Rice, oil, spices, dairy and every daily-use item from your local kiryana — order in minutes.
+      </p>
+      <div class="flex items-center gap-3">
+        <button class="rounded-full bg-primary text-white font-medium px-6 py-3 hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+          Start shopping
+        </button>
+        <button class="rounded-full border border-border font-medium px-6 py-3 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+          Today's rate list
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3">
+      <div class="bg-card border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🌾</div>
+      <div class="bg-[#EFE6D0] border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🛢️</div>
+      <div class="bg-card border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🧂</div>
+      <div class="bg-[#EFE6D0] border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🌶️</div>
+      <div class="bg-card border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🥛</div>
+      <div class="bg-[#EFE6D0] border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🍚</div>
+      <div class="bg-card border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🧅</div>
+      <div class="bg-[#EFE6D0] border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🍪</div>
+      <div class="bg-card border border-border rounded-[10px] aspect-square flex items-center justify-center text-3xl">🧽</div>
+    </div>
+  </section>
+
+  <!-- RateTicker: signature element -->
+  <section class="bg-ink py-3 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 flex items-center gap-4 mb-2">
+      <span class="font-display text-white text-sm font-bold tracking-wide">Aaj Ka Bhaav</span>
+      <span class="text-white/50 text-xs font-mono">today's rate · updated daily</span>
+    </div>
+    <div class="overflow-hidden">
+      <div class="kh-marquee flex gap-8 whitespace-nowrap w-max px-4">
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Basmati Rice <span class="text-[#E0B15C]">Rs 285/kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Sunflower Oil <span class="text-[#E0B15C]">Rs 610/L</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Sugar <span class="text-[#E0B15C]">Rs 165/kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Red Lentils <span class="text-[#E0B15C]">Rs 320/kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Wheat Flour <span class="text-[#E0B15C]">Rs 1450/10kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Tea Leaves <span class="text-[#E0B15C]">Rs 390/250g</span><span class="text-white/30">•</span></span>
+        <!-- duplicated for seamless loop -->
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Basmati Rice <span class="text-[#E0B15C]">Rs 285/kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Sunflower Oil <span class="text-[#E0B15C]">Rs 610/L</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Sugar <span class="text-[#E0B15C]">Rs 165/kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Red Lentils <span class="text-[#E0B15C]">Rs 320/kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Wheat Flour <span class="text-[#E0B15C]">Rs 1450/10kg</span><span class="text-white/30">•</span></span>
+        <span class="font-mono text-sm text-white/90 flex items-center gap-2">Tea Leaves <span class="text-[#E0B15C]">Rs 390/250g</span><span class="text-white/30">•</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CategoryFilter -->
+  <section class="max-w-6xl mx-auto px-4 py-8">
+    <div id="category-row" class="flex gap-2 overflow-x-auto pb-1">
+      <button data-category class="category-pill rounded-full text-sm font-medium px-4 py-2 shrink-0 transition bg-green text-white">Rice &amp; Grains</button>
+      <button data-category class="category-pill rounded-full text-sm font-medium px-4 py-2 shrink-0 transition bg-card text-ink border border-border">Cooking Oil &amp; Ghee</button>
+      <button data-category class="category-pill rounded-full text-sm font-medium px-4 py-2 shrink-0 transition bg-card text-ink border border-border">Spices &amp; Masala</button>
+      <button data-category class="category-pill rounded-full text-sm font-medium px-4 py-2 shrink-0 transition bg-card text-ink border border-border">Dairy &amp; Eggs</button>
+      <button data-category class="category-pill rounded-full text-sm font-medium px-4 py-2 shrink-0 transition bg-card text-ink border border-border">Snacks &amp; Biscuits</button>
+      <button data-category class="category-pill rounded-full text-sm font-medium px-4 py-2 shrink-0 transition bg-card text-ink border border-border">Household &amp; Utility</button>
+      <button data-category class="category-pill rounded-full text-sm font-medium px-4 py-2 shrink-0 transition bg-card text-ink border border-border">Fresh Vegetables</button>
+    </div>
+  </section>
+
+  <!-- ProductGrid -->
+  <section class="max-w-6xl mx-auto px-4 pb-14">
+    <div class="flex items-baseline justify-between mb-4">
+      <h2 class="font-display text-2xl font-bold">Rozmarra ki zarooriyat</h2>
+      <span class="text-inksoft text-sm">everyday essentials</span>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+
+      <!-- ProductCard -->
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3 relative">
+          🌾
+          <span class="absolute top-2 left-2 text-[10px] bg-red text-white px-2 py-0.5 rounded-full">Best seller</span>
+        </div>
+        <h3 class="text-sm font-semibold leading-snug">Super Basmati Rice</h3>
+        <span class="text-inksoft text-xs mb-2">5 kg bag</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 1425</span>
+          <button aria-label="Add Super Basmati Rice to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3">🛢️</div>
+        <h3 class="text-sm font-semibold leading-snug">Canola Cooking Oil</h3>
+        <span class="text-inksoft text-xs mb-2">3 L bottle</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 1780</span>
+          <button aria-label="Add Canola Cooking Oil to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3 relative">
+          🧂
+          <span class="absolute top-2 left-2 text-[10px] bg-red text-white px-2 py-0.5 rounded-full">Daily need</span>
+        </div>
+        <h3 class="text-sm font-semibold leading-snug">Refined Sugar</h3>
+        <span class="text-inksoft text-xs mb-2">2 kg pack</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 330</span>
+          <button aria-label="Add Refined Sugar to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3 relative">
+          🍪
+          <span class="absolute top-2 left-2 text-[10px] bg-red text-white px-2 py-0.5 rounded-full">New</span>
+        </div>
+        <h3 class="text-sm font-semibold leading-snug">Assorted Biscuits</h3>
+        <span class="text-inksoft text-xs mb-2">Pack of 6</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 540</span>
+          <button aria-label="Add Assorted Biscuits to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3">🧅</div>
+        <h3 class="text-sm font-semibold leading-snug">Fresh Onions</h3>
+        <span class="text-inksoft text-xs mb-2">2 kg</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 220</span>
+          <button aria-label="Add Fresh Onions to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3">🥛</div>
+        <h3 class="text-sm font-semibold leading-snug">Full Cream Milk</h3>
+        <span class="text-inksoft text-xs mb-2">1 L carton</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 285</span>
+          <button aria-label="Add Full Cream Milk to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3">🌶️</div>
+        <h3 class="text-sm font-semibold leading-snug">Red Chili Powder</h3>
+        <span class="text-inksoft text-xs mb-2">200 g</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 260</span>
+          <button aria-label="Add Red Chili Powder to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-[10px] p-3 flex flex-col">
+        <div class="bg-[#EFE6D0] rounded-[8px] aspect-square flex items-center justify-center text-4xl mb-3">🧽</div>
+        <h3 class="text-sm font-semibold leading-snug">Dish Wash Bar</h3>
+        <span class="text-inksoft text-xs mb-2">3-pack</span>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="font-mono text-sm font-semibold">Rs 195</span>
+          <button aria-label="Add Dish Wash Bar to cart" class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primarydark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TrustStrip -->
+  <section class="bg-card border-t border-b border-border">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="flex items-start gap-2.5">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green mt-0.5 shrink-0"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+        <div>
+          <div class="text-sm font-medium">Fresh stock</div>
+          <div class="text-inksoft text-xs">restocked daily</div>
+        </div>
+      </div>
+      <div class="flex items-start gap-2.5">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green mt-0.5 shrink-0"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>
+        <div>
+          <div class="text-sm font-medium">Fair mohalla prices</div>
+          <div class="text-inksoft text-xs">no markup games</div>
+        </div>
+      </div>
+      <div class="flex items-start gap-2.5">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green mt-0.5 shrink-0"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <div>
+          <div class="text-sm font-medium">Easy exchange</div>
+          <div class="text-inksoft text-xs">wrong item? we fix it</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <span class="font-display font-bold text-sm">Barkat Kiryana</span>
+    <span class="text-inksoft text-xs">© 2026 Barkat Kiryana Store — Faisalabad</span>
+  </footer>
+
+</div>
+
+<script>
+  // CategoryFilter active-state toggle — replace with useState once split into React
+  document.querySelectorAll('.category-pill').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.category-pill').forEach((b) => {
+        b.classList.remove('bg-green', 'text-white');
+        b.classList.add('bg-card', 'text-ink', 'border', 'border-border');
+      });
+      btn.classList.remove('bg-card', 'text-ink', 'border', 'border-border');
+      btn.classList.add('bg-green', 'text-white');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+import express from "express"
+import { getAllOrders, createOrder, getOrderById} from "../controllers/ordersController.js"
+import requireAdmin from "../middleware/adminAuthMiddleware.js"
+
+const router = express.Router()
+
+router.get("/", requireAdmin, getAllOrders)
+
+router.get("/:id", requireAdmin, getOrderById)
+
+router.post("/", requireAdmin, createOrder)
+
+export default router

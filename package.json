@@ -1,0 +1,30 @@
+{
+  "name": "karyana-store",
+  "version": "1.0.0",
+  "description": "Karyana-store full stack mern project",
+  "license": "MIT",
+  "author": "Umar",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --watch --env-file=.env ./backend/server.js"
+  },
+  "dependencies": {
+    "@sfpy/atoms": "^0.3.7",
+    "@sfpy/node-core": "^0.3.5",
+    "axios": "^1.19.0",
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
+    "colors": "^1.4.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.8.1",
+    "multer": "^2.3.0",
+    "nodemailer": "^9.0.5",
+    "stripe": "^22.6.0"
+  }
+}
