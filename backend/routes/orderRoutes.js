@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get("/", requireAdmin, getAllOrders)
 
-router.get("/:id", requireAdmin, getOrderById)
+router.get("/:id", getOrderById)
 
 router.post("/", createOrder)
 

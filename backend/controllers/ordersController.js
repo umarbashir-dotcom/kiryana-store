@@ -75,15 +75,18 @@ const getOrderById = async (req, res) => {
     const user = req.user.id
     const id = req.params.id
 
-    // get order
-    const order = await Order.findOne({
-        user,
-        _id: id
-    })
+    // get order by id
+    let order = await Order.findById(id)
 
     if(!order){
         res.status(404)
         throw new Error("Order not Found")
+    }
+
+    // check for user
+    if(order.user.toString() !== user){
+        res.status(403)  // forbidden
+        throw new Error("Your are not allowed to access this order")
     }
 
     if(order.paymentStatus !== "paid"){
