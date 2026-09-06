@@ -28,6 +28,9 @@ await connectDB()
 // cors middleware
 app.use(cors())
 
+// Production deployment is behind Render's reverse proxy
+app.set("trust proxy", 1);
+
 app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
 
 // json middleware

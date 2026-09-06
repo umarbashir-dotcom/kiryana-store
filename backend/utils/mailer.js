@@ -5,11 +5,20 @@ console.log('EMAIL_USER:', process.env.EMAIL_USER);
 console.log('PASSWORD LENGTH:', process.env.EMAIL_APP_PASSWORD?.length);
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD,
-  },
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_APP_PASSWORD,
+    },
+
+    tls: {
+        servername: "smtp.gmail.com",
+    },
+
+    family: 4,
 });
 
 // Verify connection once at startup so you catch bad credentials early,
