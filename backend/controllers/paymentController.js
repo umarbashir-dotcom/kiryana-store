@@ -33,7 +33,7 @@ const handle_webhook = async (req, res) => {
             await Payment.create({
                 user: order.user,
                 order: order._id,
-                currency: order.currency,
+                currency: session.currency,
                 amount: order.totalAmount,
                 method: "card",
                 provider: "stripe",
