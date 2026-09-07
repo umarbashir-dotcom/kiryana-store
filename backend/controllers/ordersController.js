@@ -88,11 +88,6 @@ const getOrderById = async (req, res) => {
         res.status(403)  // forbidden
         throw new Error("Your are not allowed to access this order")
     }
-
-    if(order.paymentStatus !== "paid"){
-        order.paymentStatus = "paid"
-        await order.save()
-    }
     
     res.status(200).json({ order: order})
 }
@@ -144,10 +139,8 @@ const createOrder = async (req, res) => {
 
         // check product existence and it's stock
         for(const item of orderItems){
-            console.log(item)
-            console.log(item.product)
+            
             const product = (products.find(p => p._id.toString() === item.product.toString()))
-            console.log(product)
             if(!product){
                 res.status(404)
                 throw new Error(`${item.name} does not exist in this shop`)
