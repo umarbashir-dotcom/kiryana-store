@@ -11,6 +11,7 @@
     "start": "node --watch --env-file=.env ./backend/server.js"
   },
   "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
     "@sfpy/atoms": "^0.3.7",
     "@sfpy/node-core": "^0.3.5",
     "axios": "^1.19.0",
@@ -21,6 +22,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.2",
+    "googleapis": "^178.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.8.1",
     "multer": "^2.3.0",

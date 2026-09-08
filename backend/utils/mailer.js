@@ -1,56 +1,132 @@
-import { Resend } from "resend";
+import { google } from "googleapis";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+);
+
+oauth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+});
+
+const gmail = google.gmail({
+    version: "v1",
+    auth: oauth2Client,
+});
 
 async function sendOtpEmail(toEmail, otp) {
-  const { data, error } = await resend.emails.send({
-    from: "Apna Kiryana <onboarding@resend.dev>",
-    to: [toEmail],
-    subject: "Your verification code",
-    html: `
-      <div style="
-        font-family: Arial, sans-serif;
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-      ">
-        <h2 style="color: #1F6F4A;">
-          Verify your login
-        </h2>
+    const message = [
+        `From: "Apna Kiryana App" <${process.env.EMAIL_USER}>`,
+        `To: ${toEmail}`,
+        "Subject: Your verification code",
+        "MIME-Version: 1.0",
+        "Content-Type: text/html; charset=UTF-8",
+        "",
+        `
+        <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
+            <h2 style="color:#1F6F4A;">
+                Verify your login
+            </h2>
 
-        <p>Your one-time verification code is:</p>
+            <p>Your one-time code is:</p>
 
-        <p style="
-          font-size: 32px;
-          font-weight: bold;
-          letter-spacing: 6px;
-          margin: 20px 0;
-        ">
-          ${otp}
-        </p>
+            <p style="
+                font-size: 28px;
+                font-weight: bold;
+                letter-spacing: 4px;
+            ">
+                ${otp}
+            </p>
 
-        <p style="
-          color: #6B7280;
-          font-size: 13px;
-        ">
-          This code expires in 5 minutes.
-          If you didn't request this code, you can safely ignore this email.
-        </p>
-      </div>
-    `,
-  });
+            <p style="color:#6B7280; font-size:13px;">
+                This code expires in 5 minutes.
+                If you didn't request this, ignore this email.
+            </p>
+        </div>
+        `,
+    ].join("\r\n");
 
-  if (error) {
-    console.error("Resend email error:", error);
-    throw new Error("Failed to send OTP email");
-  }
+    const rawMessage = Buffer
+        .from(message)
+        .toString("base64url");
 
-  console.log("OTP email sent:", data.id);
+    try {
+        const response = await gmail.users.messages.send({
+            userId: "me",
+            requestBody: {
+                raw: rawMessage,
+            },
+        });
 
-  return data;
+        console.log("OTP email sent successfully:", response.data.id);
+
+        return response.data;
+    } catch (error) {
+        console.error(
+            "Failed to send OTP email:",
+            error.response?.data || error.message
+        );
+
+        throw error;
+    }
 }
 
 export default sendOtpEmail;
+
+
+// import { Resend } from "resend";
+
+// const resend = new Resend(process.env.RESEND_API_KEY);
+
+// async function sendOtpEmail(toEmail, otp) {
+//   const { data, error } = await resend.emails.send({
+//     from: "Apna Kiryana <onboarding@resend.dev>",
+//     to: [toEmail],
+//     subject: "Your verification code",
+//     html: `
+//       <div style="
+//         font-family: Arial, sans-serif;
+//         max-width: 400px;
+//         margin: 0 auto;
+//         padding: 20px;
+//       ">
+//         <h2 style="color: #1F6F4A;">
+//           Verify your login
+//         </h2>
+
+//         <p>Your one-time verification code is:</p>
+
+//         <p style="
+//           font-size: 32px;
+//           font-weight: bold;
+//           letter-spacing: 6px;
+//           margin: 20px 0;
+//         ">
+//           ${otp}
+//         </p>
+
+//         <p style="
+//           color: #6B7280;
+//           font-size: 13px;
+//         ">
+//           This code expires in 5 minutes.
+//           If you didn't request this code, you can safely ignore this email.
+//         </p>
+//       </div>
+//     `,
+//   });
+
+//   if (error) {
+//     console.error("Resend email error:", error);
+//     throw new Error("Failed to send OTP email");
+//   }
+
+//   console.log("OTP email sent:", data.id);
+
+//   return data;
+// }
+
+// export default sendOtpEmail;
 
 // import nodemailer from "nodemailer";
 
