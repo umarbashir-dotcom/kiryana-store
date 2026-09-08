@@ -67,6 +67,7 @@ const login = async (req, res) => {
             user: {
                     name: user.name,
                     email: user.email,
+                    phone: user.phone
                 },
             token: jwt.sign({id: user._id, state: "otp-pending"}, process.env.JWT_SECRET,{expiresIn: "5m"}),
             isAuthenticated: false
@@ -88,8 +89,64 @@ const getMe = (req, res) => {
     })
 }
 
+// update user
+const update = async (req, res) => {
+    const { name, phone, email, password } = req.body
+
+    if(!name || !phone || !email){
+        res.status(400)  // bad request
+        throw new Error("Please add all fields")
+    }
+
+    // const salt = await bcrypt.genSalt(10)
+    // const hashedPassword = await bcrypt.hash(password, salt)
+
+    const user = await User.findOneAndUpdate({
+        _id: req.user._id},
+        {
+            name, phone, email, 
+            // password: hashedPassword
+        },
+        {returnDocument: "after"}
+    ).select("-password")
+
+    if(!user){
+        res.status(404)  // user not found
+        throw new Error("User not found")
+    }
+
+    res.status(200).json({user})
+}
+
+// update email
+const updateEmail = async (req, res) => {
+    console.log(req.body)
+    const { oldEmail, newEmail } = req.body
+
+    if(!oldEmail || !newEmail){
+        res.status(400)  // bad request
+        throw new Error("Please add email")
+    }
+
+    const user = await User.findOneAndUpdate({
+        email: oldEmail},
+        {
+            email: newEmail 
+            // password: hashedPassword
+        },
+        {returnDocument: "after"}
+    ).select("-password")
+
+    if(!user){
+        res.status(404)  // user not found
+        throw new Error("User not found")
+    }
+
+    res.status(200).json({user})
+}
+
 const genToken = (id) => {
     return jwt.sign({id, state: "verified"}, process.env.JWT_SECRET, { expiresIn: "1d"})
 }
 
-export { register, login, getMe}
+export { register, login, getMe, update, updateEmail}

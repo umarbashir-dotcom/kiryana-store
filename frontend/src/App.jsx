@@ -14,7 +14,7 @@ import { WishlistProvider } from "./context/WishlistContext"
 
 import ProtectedRoutes from './routes/ProtectedRoutes'
 import PublicRoutes from "./routes/PublicRoutes"
-
+import AdminRoutes from "./routes/AdminRoutes"
 import MainLayout from "./layouts/MainLayout"
 
 import HomePage from "./pages/HomePage"
@@ -31,10 +31,11 @@ import { OrderProvider } from "./context/OrderContext"
 import AccountPage from "./pages/AccountPage"
 import CheckoutPage from "./pages/CheckoutPage"
 import OTPPage from "./pages/OTPPage"
-
+import ProfilePage from "./pages/ProfilePage"
 
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage"
 import CheckoutCancelPage from "./pages/CheckoutCancelPage"
+
 import AdminLayout from "./layouts/AdminLayout"
 import AdminDashboardPage from "./pages/AdminDashboardPage"
 import AdminProductsPage from "./pages/AdminProductsPage"
@@ -47,6 +48,7 @@ import { Toaster } from "sonner"
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route >
+      // protected routes
       <Route path="/" element={<ProtectedRoutes />}>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
@@ -58,9 +60,13 @@ const router = createBrowserRouter(
           <Route path="/order/checkout-success/:orderId" element={<CheckoutSuccessPage />} />
           <Route path="/order/checkout-cancel/:orderId" element={<CheckoutCancelPage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/account/profile" element={<ProfilePage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
         </Route>
+      </Route>
 
+      // admin routes
+      <Route path="/admin" element={<AdminRoutes />}>
         <Route path="/admin" element={<AdminLayout  />} >
           <Route index element={<AdminDashboardPage />}/>
           <Route path="/admin/products" element={<AdminProductsPage />}/>
@@ -68,9 +74,9 @@ const router = createBrowserRouter(
           <Route path="/admin/categories" element={<AdminCategoriesPage />}/>
           <Route path="/admin/customers" element={<AdminCustomersPage />}/>
         </Route>
-
       </Route>
 
+      // public routes
       <Route path="/" element={<PublicRoutes />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/OTP" element={<OTPPage />} />

@@ -1,14 +1,30 @@
-import React, { useState } from 'react'
-import { Menu, Search } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { Menu, Search, User, ChevronDown, UserCircle, Package, MapPin, Settings, LogOut } from 'lucide-react'
 import { useNavigate, NavLink } from 'react-router-dom'
 import Cart from './Cart'
 import WishlistIcon from './WishlistIcon'
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
 
-const Header = ({ onMenuClick }) => {
+const Header = ({ onMenuClick, user }) => {
+    const { logout } = useContext(AuthContext)
+
     const [search, setSearch] = useState('')
     const [showMobileSearch, setShowMobileSearch] = useState(false)
     const navigate = useNavigate()
+    const [accountOpen, setAccountOpen] = useState(false)
+    const accountRef = useRef(null)
 
+    // Close account dropdown when clicking outside 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (accountRef.current && !accountRef.current.contains(event.target)) { setAccountOpen(false) }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+
+        return () => { document.removeEventListener('mousedown', handleClickOutside) }
+    }, [])
+    const userName = user?.name || 'Account'
     const handleSearch = (e) => {
         e.preventDefault()
 
@@ -20,6 +36,18 @@ const Header = ({ onMenuClick }) => {
 
         setSearch("")
         setShowMobileSearch(false)
+    }
+
+    // logout user
+    const logoutUser = () => {
+        try {
+            logout()
+            navigate("/login")
+        } catch (err) {
+            toast.error(err.message)
+        } finally {
+
+        }
     }
     return (
         <header className="sticky top-0 z-40 bg-white border-b border-[#22281F]/10">
@@ -73,19 +101,71 @@ const Header = ({ onMenuClick }) => {
 
                     {/* <!-- Wishlist (desktop) --> */}
                     <WishlistIcon />
-                    
+
                     {/* <!-- Cart, with item-count badge --> */}
                     <Cart />
 
                     {/* <!-- Account (desktop) --> */}
-                    <NavLink to="/account" aria-label="Account" className="hidden lg:inline-flex p-2 rounded-lg hover:bg-[#F6F8F4]">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path strokeLinecap="round" d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
-                        </svg>
-                    </NavLink>
+                    {/* Account */}
+                    <div ref={accountRef} className="relative hidden lg:block" >
+                        <button type="button" aria-label="Account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((prev) => !prev)} className=" inline-flex items-center gap-1.5 p-2 rounded-lg transition hover:bg-[#F6F8F4] " >
+                            <User className="w-5 h-5" strokeWidth={2} />
+                            <span className="max-w-[110px] truncate text-sm font-medium text-[#22281F]"> {userName} </span>
+                            <ChevronDown className={` w-4 h-4 text-[#22281F]/50 transition-transform ${accountOpen ? 'rotate-180' : ''} `} strokeWidth={2} />
+                        </button>
+                        {/* Account Dropdown */}
+                        {accountOpen && (<div className=" absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-2xl border border-[#22281F]/10 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.12)] " >
+                            {/* Account Header */}
+                            <div className="px-4 py-4 border-b border-[#22281F]/10">
+                                <p className="text-sm font-semibold text-[#22281F] truncate"> {userName} </p>
+                                <p className="mt-0.5 text-xs text-[#22281F]/50"> My account </p>
+                            </div>
+                            {/* Account Links */}
+                            <div className="p-2">
+                                {/* Profile */}
+                                <NavLink to="/account/profile" onClick={() => setAccountOpen(false)} className=" flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A] " >
+                                    <UserCircle className="w-4 h-4" />
+                                    <span>Profile</span>
+                                </NavLink>
+                                {/* Orders */}
+                                <NavLink to="/account/orders"
+                                    onClick={() => setAccountOpen(false)} className=" flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A] " > <Package className="w-4 h-4" />
+                                    <span>My Orders</span>
+                                </NavLink>
+                                {/* Addresses */}
+                                <NavLink to="/account/addresses" onClick={() => setAccountOpen(false)} className=" flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A] " >
+                                    <MapPin className="w-4 h-4" />
+                                    <span>Addresses</span>
+                                </NavLink>
+                                {/* Settings */}
+                                {/* <NavLink to="/account/settings" onClick={() => setAccountOpen(false)} className=" flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A] " >
+                                    <Settings className="w-4 h-4" />
+                                    <span>Settings</span>
+                                </NavLink> */}
+                                {user?.role === 'admin' && (
+                                    <NavLink
+                                        to="/admin"
+                                        onClick={() => setAccountOpen(false)}
+                                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A]"
+                                    >
+                                        <Settings className="w-4 h-4" />
+                                        <span>Admin Dashboard</span>
+                                    </NavLink>
+                                )}
+                            </div>
+                            {/* Logout */}
+                            <div className="border-t border-[#22281F]/10 p-2">
+                                <button type="button" className=" flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#C1502E] transition hover:bg-[#C1502E]/5 "
+                                    onClick={logoutUser} >
+                                    <LogOut className="w-4 h-4" />
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        </div>)}
+                    </div>
                 </div>
             </div>
+
             {showMobileSearch && (
                 <div className="lg:hidden px-4 pb-3">
                     <form onSubmit={handleSearch} className="flex items-center gap-2">
@@ -116,7 +196,7 @@ const Header = ({ onMenuClick }) => {
                     </form>
                 </div>
             )}
-        </header>
+        </header >
     )
 }
 

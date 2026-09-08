@@ -57,6 +57,7 @@ const AuthProvider = ({ children }) => {
     const getMe = async () => {
         try {
             const data = await authService.getMe()
+            console.log("data inside context: ", data)
             dispatch({
                 type: "SET_ME",
                 payload: data
@@ -76,6 +77,27 @@ const AuthProvider = ({ children }) => {
                 throw err
             }
         }
+    }
+
+    
+    const update = async (updatedData) => {
+
+        const data = await authService.update(updatedData)
+        dispatch({
+            type: "UPDATE_USER",
+            payload: data
+        })
+
+    }
+
+    const changeEmail = async (oldEmail, newEmail) => {
+
+        const data = await authService.changeEmail(oldEmail, newEmail)
+        dispatch({
+            type: "UPDATE_EMAIL",
+            payload: data
+        })
+
     }
 
     const requestOtp = async (email) => {
@@ -104,10 +126,12 @@ const AuthProvider = ({ children }) => {
         loading: state.loading,
         login,
         register,
+        update,
         logout,
         getMe,
         requestOtp,
-        verifyOtp
+        verifyOtp,
+        changeEmail,
     }}>
         {children}
     </AuthContext.Provider>)

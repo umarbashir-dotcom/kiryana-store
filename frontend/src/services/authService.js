@@ -32,6 +32,7 @@ const authService = {
 
     logout: () => {
         localStorage.removeItem("token")
+        localStorage.removeItem("refresh_token")
         return {
             isAuthenticated: false,
             token: null,
@@ -59,11 +60,50 @@ const authService = {
     },
 
     getMe: async () => {
-        const token = localStorage.getItem("token") 
+        const token = localStorage.getItem("token") || localStorage.getItem("refresh_token")
         const res = await fetch(`${import.meta.env.VITE_USER_API}/me`, {
             headers: {
                 authorization: "Bearer " + token 
             }
+        })
+
+        const data = await res.json()
+        if (!res.ok) {
+            const error = new Error(data.error)
+            error.status = res.status
+            throw error
+        }
+        console.log("data: ", data)
+        return data
+    },
+    update: async (updatedData) => {
+        const token = localStorage.getItem("token") 
+        const res = await fetch(`${import.meta.env.VITE_USER_API}`, {
+            method: "PUT",
+            headers: {
+                authorization: "Bearer " + token,
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify(updatedData)
+        })
+
+        const data = await res.json()
+        if (!res.ok) {
+            const error = new Error(data.error)
+            error.status = res.status
+            throw error
+        }
+        return data
+    },
+    changeEmail: async (oldEmail, newEmail) => {
+        const token = localStorage.getItem("token") 
+        const res = await fetch(`${import.meta.env.VITE_USER_API}/update/email`, {
+            method: "PUT",
+            headers: {
+                authorization: "Bearer " + token,
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({oldEmail, newEmail})
         })
 
         const data = await res.json()

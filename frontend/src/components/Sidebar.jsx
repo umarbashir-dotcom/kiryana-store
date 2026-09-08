@@ -3,11 +3,26 @@ import { X } from 'lucide-react'
 import { useEffect, useState, useContext } from 'react'
 import { CategoriesContext } from '../context/CategoriesContext'
 import CategoryLink from './CategoryLink'
+import { AuthContext } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 // On lg screens this is the SAME component, just wider — no separate desktop sidebar needed.
 const Sidebar = ({ isOpen, onClose }) => {
   const { categories } = useContext(CategoriesContext)
+  const { logout } = useContext(AuthContext)
+  const navigate = useNavigate()
 
+  // logout user
+    const logoutUser = () => {
+        try {
+            logout()
+            navigate("/login")
+        } catch (err) {
+            toast.error(err.message)
+        } finally {
+
+        }
+    }
   return (
     <div
       className={`fixed inset-0 z-50 ${isOpen ? '' : 'pointer-events-none'}`}
@@ -46,7 +61,8 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
 
         <div className="px-5 py-4 border-t border-[#22281F]/10">
-          <button type="button" className="w-full py-2.5 rounded-lg border border-[#C1502E] text-[#C1502E] text-sm font-medium hover:bg-[#C1502E] hover:text-white transition-colors">
+          <button type="button" className="w-full py-2.5 rounded-lg border border-[#C1502E] text-[#C1502E] text-sm font-medium hover:bg-[#C1502E] hover:text-white transition-colors"
+          onClick={logoutUser}>
             Log Out
           </button>
         </div>

@@ -4,9 +4,16 @@ import {
     Bell,
     ExternalLink,
     ChevronDown,
+    User,
 } from "lucide-react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const AdminTopBar = ({ onMenuClick }) => {
+    const { user } = useContext(AuthContext)
+
+    const navigate = useNavigate()
     return (
         <header className="sticky top-0 z-30 h-[76px] border-b border-slate-200 bg-white/95 backdrop-blur">
             <div className="flex h-full items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -101,6 +108,7 @@ const AdminTopBar = ({ onMenuClick }) => {
                             hover:text-slate-900
                             sm:flex
                         "
+                        onClick={() => { navigate("/")}}
                     >
                         <span>View Store</span>
                         <ExternalLink size={15} />
@@ -154,17 +162,17 @@ const AdminTopBar = ({ onMenuClick }) => {
                                 text-emerald-700
                             "
                         >
-                            AB
+                            {user.name.charAt(0).toUpperCase() + user.name.split(" ")[1].charAt(0).toUpperCase()}
                         </div>
 
                         <span className="hidden text-sm font-semibold text-slate-700 lg:block">
-                            Admin
+                            {user.name}
                         </span>
 
-                        <ChevronDown
+                        {/* <ChevronDown
                             size={15}
                             className="hidden text-slate-400 lg:block"
-                        />
+                        /> */}
                     </button>
                 </div>
             </div>

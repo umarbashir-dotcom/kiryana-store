@@ -187,7 +187,7 @@ const CategoryPage = () => {
 
 
     return (
-        <main className="w-full min-h-screen bg-white">
+        <main className="w-full min-h-screen bg-[#F6F8F4]">
 
 
             {/* ============================================================

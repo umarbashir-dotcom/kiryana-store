@@ -13,15 +13,15 @@ const BottomNav = () => {
 
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#22281F]/10">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-4">
           <NavLink to="/" className={getClassName}>
             <Home className="w-6 h-6" strokeWidth={2} />
             <span className="text-[11px]">Home</span>
           </NavLink>
-          <NavLink to="/ss" className={getClassName}>
+          {/* <NavLink to="/ss" className={getClassName}>
             <Search className="w-6 h-6" strokeWidth={2} />
             <span className="text-[11px] font-medium">Search</span>
-          </NavLink>
+          </NavLink> */}
           <NavLink to="/wishlist" className={getClassName}>
             <Heart className="w-6 h-6" strokeWidth={2} />
             { wishlistItemsCount > 0 && 
@@ -37,7 +37,7 @@ const BottomNav = () => {
             </span> }
             <span className="text-[11px]">Cart</span>
           </NavLink>
-          <NavLink to="/account" className={getClassName}>
+          <NavLink to="/account/profile" className={getClassName}>
             <User className="w-6 h-6" strokeWidth={2} />
             <span className="text-[11px]">Account</span>
           </NavLink>

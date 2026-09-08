@@ -9,12 +9,31 @@ import {
     X,
     ChevronRight,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const AdminSidebar = ({ isOpen, onClose }) => {
+    const {logout, user } = useContext(AuthContext)
+    console.log(user)
+    console.log("name: ", user.name)
+
+    const navigate = useNavigate()
+
     const getClassName = ({isActive}) => isActive ? 
                             "flex items-center gap-3 rounded-xl bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700"
                             : "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+    // logout user
+    const logoutUser = () => {
+        try {
+            logout()
+            navigate("/login")
+        } catch (err) {
+            toast.error(err.message)
+        } finally {
+
+        }
+    }
     return (
         <>
             {/* Mobile Overlay */}
@@ -106,12 +125,12 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                 <div className="shrink-0 px-4 pt-5">
                     <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700">
-                            AB
+                            {user.name.charAt(0).toUpperCase() + user.name.split(" ")[1].charAt(0).toUpperCase()}
                         </div>
 
                         <div className="min-w-0 flex-1">
                             <p className="truncate text-sm font-semibold text-slate-900">
-                                Admin
+                                {user.name}
                             </p>
 
                             <p className="truncate text-xs text-slate-500">
@@ -268,6 +287,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                             hover:bg-red-50
                             hover:text-red-600
                         "
+                        onClick={logoutUser}
                     >
                         <LogOut
                             size={19}
