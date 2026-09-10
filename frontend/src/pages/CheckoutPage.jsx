@@ -1,363 +1,1036 @@
-// frontend/src/pages/Checkout.jsx
+import { useState, useContext } from 'react'
+import { useNavigate } from "react-router-dom"
+import { CartContext } from '../context/CartContext'
+import { OrderContext } from "../context/OrderContext"
+import QuantityStepper from '../components/QuantityStepper'
+import orderService from '../services/orderService'
+import { toast } from 'sonner'
 
-import {
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+const CheckoutPage = () => {
+    const { cartItems, getCart } = useContext(CartContext)
+    const { placeOrder, orderItems, setOrderItems } = useContext(OrderContext)
+    const navigate = useNavigate()
 
-import { useParams } from "react-router-dom";
+    const totalAmount = orderItems.reduce((total, item) =>
+        total + (item.quantity * item.price), 0)
 
+    const [shippingFormData, setShippingFormData] = useState({
+        name: "",
+        phone: "",
+        address: "",
+        city: ""
+    })
 
-function CheckoutPage() {
+    const [shippingErrors, setShippingErrors] = useState({})
 
-    const { orderId } = useParams();
+    const [paymentMethod, setPaymentMethod] = useState("cod")
 
+    const [shippingOpen, setShippingOpen] = useState(false)
+    const [paymentOpen, setPaymentOpen] = useState(true)
 
-    const cardRef = useRef(null);
+    const [disabled, setDisabled] = useState(false)
 
+    // valid shipping
+    const validateShipping = () => {
+        const errors = {}
 
-    const [tracker, setTracker] =
-        useState(null);
-
-    const [authToken, setAuthToken] =
-        useState(null);
-
-    const [paymentId, setPaymentId] =
-        useState(null);
-
-    const [cardReady, setCardReady] =
-        useState(false);
-
-    const [error, setError] =
-        useState(null);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE PAYMENT SESSION
-    |--------------------------------------------------------------------------
-    */
-
-    useEffect(() => {
-
-        const createSession = async () => {
-
-            try {
-
-                console.log(
-                    "Creating SafePay payment session..."
-                );
-
-
-                const response =
-                    await fetch(
-                        `${import.meta.env.VITE_HOST}/api/payments/create-session`,
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json",
-
-                                Authorization:
-                                    "Bearer " +
-                                    localStorage.getItem(
-                                        "token"
-                                    ),
-                            },
-
-                            body: JSON.stringify({
-                                orderId,
-                            }),
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                console.log(
-                    "SafePay session response:",
-                    data
-                );
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        data.message ||
-                        "Failed to create payment session"
-                    );
-                }
-
-
-                if (!data.trackerToken) {
-
-                    throw new Error(
-                        "SafePay tracker token missing"
-                    );
-                }
-
-
-                if (!data.authToken) {
-
-                    throw new Error(
-                        "SafePay authentication token missing"
-                    );
-                }
-
-
-                setTracker(
-                    data.trackerToken
-                );
-
-                setAuthToken(
-                    data.authToken
-                );
-
-                setPaymentId(
-                    data.paymentId
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Checkout setup error:",
-                    error
-                );
-
-                setError(
-                    error.message
-                );
-            }
-        };
-
-
-        createSession();
-
-    }, [orderId]);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CONFIGURE SAFE PAY CARD ATOM
-    |--------------------------------------------------------------------------
-    */
-
-    useEffect(() => {
-
-        if (
-            !tracker ||
-            !authToken ||
-            !cardRef.current
-        ) {
-            return;
+        if (!shippingFormData.name.trim()) {
+            errors.name = "Full name is required"
         }
 
+        if (!shippingFormData.phone.trim()) {
+            errors.phone = "Phone number is required"
+        }
 
-        const cardAtom =
-            cardRef.current;
+        if (!shippingFormData.address.trim()) {
+            errors.address = "Address is required"
+        }
 
-
-        console.log(
-            "Configuring SafePay Card Atom..."
-        );
-
-
-        Object.assign(
-            cardAtom,
-            {
-
-                environment:
-                    "sandbox",
-
-                tracker:
-                    tracker,
-
-                authToken:
-                    authToken,
-
-                validationEvent:
-                    "submit",
-
-
-                onReady: () => {
-
-                    console.log(
-                        "SafePay Card Atom READY"
-                    );
-
-                    setCardReady(true);
-                },
-
-
-                onError: (error) => {
-
-                    console.error(
-                        "SafePay Card Error:",
-                        error
-                    );
-
-                    setError(
-                        "SafePay card form failed to load."
-                    );
-                },
-
-
-                onValidated: (data) => {
-
-                    console.log(
-                        "Card validated:",
-                        data
-                    );
-                },
-
-
-                onProceedToAuthentication:
-                    (data) => {
-
-                        console.log(
-                            "Proceed to payer authentication:",
-                            data
-                        );
-
-                        /*
-                         * Payer authentication can be
-                         * implemented here after the
-                         * card has been successfully
-                         * validated/captured.
-                         */
-                    },
-            }
-        );
-
-
-    }, [
-        tracker,
-        authToken,
-    ]);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | LOADING
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        !tracker ||
-        !authToken
-    ) {
-
-        return (
-            <div
-                style={{
-                    padding: "40px",
-                }}
-            >
-
-                <h2>
-                    Loading checkout...
-                </h2>
-
-
-                {error && (
-                    <p
-                        style={{
-                            color: "red",
-                        }}
-                    >
-                        {error}
-                    </p>
-                )}
-
-            </div>
-        );
+        return errors
     }
 
+    // input field change handler
+    const handleChange = (e) => {
+        setShippingFormData(prev => {
+            return {
+                ...prev,
+                [e.target.name]: e.target.value
+            }
+        })
+    }
+
+    // submitForm handler
+    const submitOrder = async (e) => {
+        e.preventDefault()
+
+        const errors = validateShipping()
+
+        // check if shipping details are empty
+        if (Object.keys(errors).length > 0) {
+            setShippingErrors(errors)
+
+            if (!shippingOpen)
+                setShippingOpen(true)
+
+            // scroll to shipping section
+            setTimeout(() => {
+                document.getElementById("shipping-section")?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                })
+            }, 0)
+
+            return
+        }
+
+        try {
+            setDisabled(true)
+
+            const orderData = await placeOrder({
+                ...shippingFormData,
+                paymentMethod: paymentMethod
+            })
+
+            setOrderItems([])
+            await getCart()
+
+            setShippingFormData({
+                name: "",
+                phone: "",
+                address: "",
+                city: ""
+            })
+
+            if (paymentMethod === "card") {
+                const checkoutUrl = await orderService.createCheckoutSession(
+                    orderData.orderId
+                )
+                window.location.href = checkoutUrl
+                return
+            }
+
+            // CARD PAYMENT 
+            if (paymentMethod === "card"){ 
+                const checkoutUrl = await orderService.createCheckoutSession(orderData.orderId)
+                window.location.href = checkoutUrl
+                return 
+            } 
+
+            // BANK TRANSFER 
+            if (paymentMethod === "bank_transfer"){ 
+                navigate(`/checkout/bank-transfer/${orderData.orderId}`) 
+                return 
+            } 
+            
+        
+            // COD
+            return navigate(
+                `/checkout/checkout-success/${orderData.orderId}`
+            )
+
+        } catch (error) {
+            console.log(error)
+
+            toast.error(
+                error.message,
+                {
+                    description: "Couldn't place your order"
+                }
+            )
+
+        } finally {
+            setDisabled(false)
+            setShippingErrors({})
+        }
+    }
+
+    const goBack = () => {
+        window.history.back()
+    }
+
+    const continueShopping = () => {
+        navigate("/")
+    }
 
     /*
-    |--------------------------------------------------------------------------
-    | PAYMENT PAGE
-    |--------------------------------------------------------------------------
-    */
+     * Button text depends on the selected payment method.
+     */
+    const getSubmitButtonText = () => {
+        if (!disabled) {
+            if (paymentMethod === "cod") {
+                return "Place Order"
+            }
+
+            if (paymentMethod === "card") {
+                return "Proceed to Payment"
+            }
+
+            if (paymentMethod === "bank_transfer") {
+                return "Place Order"
+            }
+        }
+
+        if (paymentMethod === "cod") {
+            return "Placing Order..."
+        }
+
+        if (paymentMethod === "card") {
+            return "Preparing Payment..."
+        }
+
+        return "Processing..."
+    }
 
     return (
+        // CheckoutPage
+        <div className="min-h-screen bg-[#FAFAF8]">
 
-        <div
-            style={{
-                maxWidth: "500px",
-                margin: "40px auto",
-                padding: "24px",
-            }}
-        >
+            {/* CheckoutHeader */}
+            <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-3">
 
-            <h2>
-                Card Payment
-            </h2>
-
-
-            <p>
-                Payment ID:{" "}
-                {paymentId}
-            </p>
-
-
-            {error && (
-
-                <div
-                    style={{
-                        marginBottom: "20px",
-                        padding: "12px",
-                        color: "red",
-                        border:
-                            "1px solid red",
-                    }}
+                <button
+                    type="button"
+                    onClick={goBack}
+                    disabled={disabled}
+                    className={`p-1 -ml-1 rounded-lg transition-colors ${
+                        disabled
+                            ? "text-gray-300 cursor-not-allowed"
+                            : "text-gray-500 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-200"
+                    }`}
+                    aria-label="Go back"
                 >
-                    {error}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="m15 18-6-6 6-6" />
+                    </svg>
+                </button>
+
+                <h1 className="text-lg font-semibold text-gray-900">
+                    Checkout
+                </h1>
+
+            </header>
+
+
+            <div className="px-4 py-4 max-w-5xl mx-auto lg:flex lg:gap-8 lg:items-start">
+
+
+                {/* CheckoutForm */}
+                <div className="lg:flex-1 space-y-3">
+
+
+                    {/* =====================================================
+                        SHIPPING DETAILS
+                    ====================================================== */}
+
+                    <div
+                        id="shipping-section"
+                        className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                    >
+
+                        {/* Shipping Details Header */}
+                        <button
+                            type="button"
+                            onClick={() => setShippingOpen(!shippingOpen)}
+                            disabled={disabled}
+                            className={`w-full flex items-center justify-between px-4 py-3.5 transition-colors ${
+                                disabled
+                                    ? "cursor-not-allowed"
+                                    : "hover:bg-gray-50 active:bg-gray-100"
+                            }`}
+                            aria-expanded={shippingOpen}
+                        >
+
+                            <span className="text-sm font-semibold text-gray-900">
+                                Shipping Details
+                            </span>
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className={`text-gray-400 transition-transform duration-200 ${
+                                    shippingOpen ? "rotate-180" : ""
+                                }`}
+                            >
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
+
+                        </button>
+
+
+                        {/* Shipping Details Content */}
+                        {shippingOpen && (
+                            <form className="px-4 pb-4 space-y-3 border-t border-gray-100 pt-3">
+
+                                <div>
+
+                                    <label
+                                        htmlFor="name"
+                                        className="block text-xs font-medium text-gray-500 mb-1"
+                                    >
+                                        Full Name
+                                    </label>
+
+                                    <input
+                                        id="name"
+                                        name="name"
+                                        type="text"
+                                        placeholder="Enter your full name"
+                                        disabled={disabled}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${
+                                            disabled
+                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                                : "border-gray-200 bg-white"
+                                        }`}
+                                        value={shippingFormData.name}
+                                        onChange={handleChange}
+                                    />
+
+                                    {shippingErrors.name && (
+                                        <p className="mt-1 text-xs text-red-500">
+                                            {shippingErrors.name}
+                                        </p>
+                                    )}
+
+                                </div>
+
+
+                                <div>
+
+                                    <label
+                                        htmlFor="phone"
+                                        className="block text-xs font-medium text-gray-500 mb-1"
+                                    >
+                                        Phone Number
+                                    </label>
+
+                                    <input
+                                        id="phone"
+                                        name="phone"
+                                        type="tel"
+                                        placeholder="03XX-XXXXXXX"
+                                        disabled={disabled}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${
+                                            disabled
+                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                                : "border-gray-200 bg-white"
+                                        }`}
+                                        value={shippingFormData.phone}
+                                        onChange={handleChange}
+                                    />
+
+                                    {shippingErrors.phone && (
+                                        <p className="mt-1 text-xs text-red-500">
+                                            {shippingErrors.phone}
+                                        </p>
+                                    )}
+
+                                </div>
+
+
+                                <div>
+
+                                    <label
+                                        htmlFor="address"
+                                        className="block text-xs font-medium text-gray-500 mb-1"
+                                    >
+                                        Address
+                                    </label>
+
+                                    <textarea
+                                        id="address"
+                                        name="address"
+                                        rows="2"
+                                        placeholder="House #, Street, Area"
+                                        disabled={disabled}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] resize-none ${
+                                            disabled
+                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                                : "border-gray-200 bg-white"
+                                        }`}
+                                        value={shippingFormData.address}
+                                        onChange={handleChange}
+                                    ></textarea>
+
+                                    {shippingErrors.address && (
+                                        <p className="mt-1 text-xs text-red-500">
+                                            {shippingErrors.address}
+                                        </p>
+                                    )}
+
+                                </div>
+
+
+                                <div>
+
+                                    <label
+                                        htmlFor="city"
+                                        className="block text-xs font-medium text-gray-500 mb-1"
+                                    >
+                                        City
+                                    </label>
+
+                                    <input
+                                        id="city"
+                                        name="city"
+                                        type="text"
+                                        placeholder="e.g. Faisalabad"
+                                        disabled={disabled}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${
+                                            disabled
+                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                                : "border-gray-200 bg-white"
+                                        }`}
+                                        value={shippingFormData.city}
+                                        onChange={handleChange}
+                                    />
+
+                                </div>
+
+                            </form>
+                        )}
+
+                    </div>
+
+
+
+                    {/* =====================================================
+                        PAYMENT METHOD
+                    ====================================================== */}
+
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+
+                        {/* Payment Method Header */}
+                        <button
+                            type="button"
+                            onClick={() => setPaymentOpen(!paymentOpen)}
+                            disabled={disabled}
+                            className={`w-full flex items-center justify-between px-4 py-3.5 transition-colors ${
+                                disabled
+                                    ? "cursor-not-allowed"
+                                    : "hover:bg-gray-50 active:bg-gray-100"
+                            }`}
+                            aria-expanded={paymentOpen}
+                        >
+
+                            <span className="text-sm font-semibold text-gray-900">
+                                Select Payment Mode
+                            </span>
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className={`text-gray-400 transition-transform duration-200 ${
+                                    paymentOpen ? "rotate-180" : ""
+                                }`}
+                            >
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
+
+                        </button>
+
+
+                        {/* Payment Method Content */}
+                        {paymentOpen && (
+                            <div className="px-4 pb-4 border-t border-gray-100 pt-4">
+
+                                <fieldset disabled={disabled}>
+
+                                    <legend className="sr-only">
+                                        Select Payment Method
+                                    </legend>
+
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+
+
+                                        {/* Cash on Delivery */}
+                                        <label
+                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${
+                                                disabled
+                                                    ? "cursor-not-allowed opacity-60"
+                                                    : "cursor-pointer"
+                                            } ${
+                                                paymentMethod === "cod"
+                                                    ? "border-[#1F6F4A] bg-[#1F6F4A]/5"
+                                                    : "border-gray-100 hover:bg-gray-50"
+                                            }`}
+                                        >
+
+                                            <input
+                                                type="radio"
+                                                name="paymentMethod"
+                                                value="cod"
+                                                checked={paymentMethod === "cod"}
+                                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                                className="sr-only"
+                                            />
+
+                                            <div className="w-12 h-12 rounded-full bg-[#E8F5EE] flex items-center justify-center">
+
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="26"
+                                                    height="26"
+                                                    viewBox="0 0 48 48"
+                                                >
+                                                    <rect
+                                                        x="4"
+                                                        y="14"
+                                                        width="40"
+                                                        height="24"
+                                                        rx="4"
+                                                        fill="#4CAF7D"
+                                                    />
+
+                                                    <rect
+                                                        x="4"
+                                                        y="14"
+                                                        width="40"
+                                                        height="24"
+                                                        rx="4"
+                                                        fill="none"
+                                                        stroke="#2E8B57"
+                                                        strokeWidth="1.5"
+                                                    />
+
+                                                    <circle
+                                                        cx="24"
+                                                        cy="26"
+                                                        r="7"
+                                                        fill="#FFF6D9"
+                                                    />
+
+                                                    <text
+                                                        x="24"
+                                                        y="30"
+                                                        fontSize="10"
+                                                        fontWeight="700"
+                                                        textAnchor="middle"
+                                                        fill="#E0A800"
+                                                    >
+                                                        ₨
+                                                    </text>
+
+                                                    <circle
+                                                        cx="10"
+                                                        cy="18"
+                                                        r="2"
+                                                        fill="#2E8B57"
+                                                    />
+
+                                                    <circle
+                                                        cx="38"
+                                                        cy="34"
+                                                        r="2"
+                                                        fill="#2E8B57"
+                                                    />
+
+                                                </svg>
+
+                                            </div>
+
+                                            <span className="text-xs font-medium text-gray-900 text-center">
+                                                Cash on Delivery
+                                            </span>
+
+                                        </label>
+
+
+                                        {/* Debit / Credit Card */}
+                                        <label
+                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${
+                                                disabled
+                                                    ? "cursor-not-allowed opacity-60"
+                                                    : "cursor-pointer"
+                                            } ${
+                                                paymentMethod === "card"
+                                                    ? "border-[#1F6F4A] bg-[#1F6F4A]/5"
+                                                    : "border-gray-100 hover:bg-gray-50"
+                                            }`}
+                                        >
+
+                                            <input
+                                                type="radio"
+                                                name="paymentMethod"
+                                                value="card"
+                                                checked={paymentMethod === "card"}
+                                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                                className="sr-only"
+                                            />
+
+                                            <div className="w-12 h-12 rounded-full bg-[#FFEEEE] flex items-center justify-center">
+
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="26"
+                                                    height="26"
+                                                    viewBox="0 0 48 48"
+                                                >
+                                                    <rect
+                                                        x="5"
+                                                        y="10"
+                                                        width="38"
+                                                        height="26"
+                                                        rx="4"
+                                                        fill="#FF8A65"
+                                                    />
+
+                                                    <rect
+                                                        x="5"
+                                                        y="16"
+                                                        width="38"
+                                                        height="6"
+                                                        fill="#5C2E1E"
+                                                    />
+
+                                                    <rect
+                                                        x="9"
+                                                        y="28"
+                                                        width="12"
+                                                        height="4"
+                                                        rx="1"
+                                                        fill="#FFE0D2"
+                                                    />
+
+                                                    <circle
+                                                        cx="34"
+                                                        cy="30"
+                                                        r="4"
+                                                        fill="#FFD54F"
+                                                    />
+
+                                                    <circle
+                                                        cx="38"
+                                                        cy="30"
+                                                        r="4"
+                                                        fill="#F44336"
+                                                        opacity="0.85"
+                                                    />
+
+                                                </svg>
+
+                                            </div>
+
+                                            <span className="text-xs font-medium text-gray-900 text-center">
+                                                Debit / Credit Card
+                                            </span>
+
+                                        </label>
+
+
+                                        {/* Bank Transfer */}
+                                        <label
+                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${
+                                                disabled
+                                                    ? "cursor-not-allowed opacity-60"
+                                                    : "cursor-pointer"
+                                            } ${
+                                                paymentMethod === "bank_transfer"
+                                                    ? "border-[#1F6F4A] bg-[#1F6F4A]/5"
+                                                    : "border-gray-100 hover:bg-gray-50"
+                                            }`}
+                                        >
+
+                                            <input
+                                                type="radio"
+                                                name="paymentMethod"
+                                                value="bank_transfer"
+                                                checked={paymentMethod === "bank_transfer"}
+                                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                                className="sr-only"
+                                            />
+
+                                            <div className="w-12 h-12 rounded-full bg-[#F1EEFE] flex items-center justify-center">
+
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="26"
+                                                    height="26"
+                                                    viewBox="0 0 48 48"
+                                                >
+                                                    <path
+                                                        d="M24 6 44 16H4z"
+                                                        fill="#9575CD"
+                                                    />
+
+                                                    <rect
+                                                        x="8"
+                                                        y="18"
+                                                        width="4"
+                                                        height="16"
+                                                        fill="#7E57C2"
+                                                    />
+
+                                                    <rect
+                                                        x="16"
+                                                        y="18"
+                                                        width="4"
+                                                        height="16"
+                                                        fill="#7E57C2"
+                                                    />
+
+                                                    <rect
+                                                        x="24"
+                                                        y="18"
+                                                        width="4"
+                                                        height="16"
+                                                        fill="#7E57C2"
+                                                    />
+
+                                                    <rect
+                                                        x="32"
+                                                        y="18"
+                                                        width="4"
+                                                        height="16"
+                                                        fill="#7E57C2"
+                                                    />
+
+                                                    <rect
+                                                        x="5"
+                                                        y="36"
+                                                        width="38"
+                                                        height="4"
+                                                        rx="1"
+                                                        fill="#5E35B1"
+                                                    />
+
+                                                </svg>
+
+                                            </div>
+
+                                            <span className="text-xs font-medium text-gray-900 text-center">
+                                                Bank Transfer
+                                            </span>
+
+                                        </label>
+
+                                    </div>
+
+                                </fieldset>
+
+                            </div>
+                        )}
+
+                    </div>
+
+
+
+                    {/* =====================================================
+                        ORDER REVIEW — NOT COLLAPSIBLE
+                    ====================================================== */}
+
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+
+                        {/* Normal heading — NOT a button */}
+                        <div className="px-4 py-3.5">
+
+                            <span className="text-sm font-semibold text-gray-900">
+                                Order Review
+                            </span>
+
+                        </div>
+
+
+                        {/* Order Review Content */}
+                        <div className="border-t border-gray-100">
+
+                            <table className="w-full text-sm hidden sm:table">
+
+                                <thead>
+
+                                    <tr className="border-b border-gray-100">
+
+                                        <th className="text-left font-medium text-gray-500 px-4 py-2.5">
+                                            Product
+                                        </th>
+
+                                        <th className="text-left font-medium text-gray-500 px-4 py-2.5">
+                                            Name
+                                        </th>
+
+                                        <th className="text-center font-medium text-gray-500 px-4 py-2.5">
+                                            Qty
+                                        </th>
+
+                                        <th className="text-right font-medium text-gray-500 px-4 py-2.5">
+                                            Unit Price
+                                        </th>
+
+                                        <th className="text-right font-medium text-gray-500 px-4 py-2.5">
+                                            Total
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+                                    {orderItems.map(item => (
+                                        <tr
+                                            className="border-b border-gray-50 last:border-0"
+                                            key={item.product._id}
+                                        >
+
+                                            <td className="px-4 py-2.5">
+
+                                                <img
+                                                    src={item.product.images[0].url}
+                                                    alt={item.product.name}
+                                                    className="w-10 h-10 rounded-lg object-cover bg-gray-100"
+                                                />
+
+                                            </td>
+
+                                            <td className="px-4 py-2.5 text-gray-900">
+                                                {item.product.name} {item.product.quantity}{item.product.unit}
+                                            </td>
+
+                                            <td className="px-4 py-2.5 text-center">
+
+                                                <QuantityStepper
+                                                    cartItem={item}
+                                                    size="sm"
+                                                    page="CheckoutPage"
+                                                />
+
+                                            </td>
+
+                                            <td className="px-4 py-2.5 text-right text-gray-600">
+                                                ₨ {item.price.toLocaleString()}
+                                            </td>
+
+                                            <td className="px-4 py-2.5 text-right font-medium text-gray-900">
+                                                ₨ {(item.price * item.quantity).toLocaleString()}
+                                            </td>
+
+                                        </tr>
+                                    ))}
+
+                                </tbody>
+
+                            </table>
+
+
+                            {/* Mobile stacked rows */}
+                            <div className="sm:hidden divide-y divide-gray-50">
+
+                                {orderItems.map(item => (
+
+                                    <div
+                                        className="flex items-center gap-3 px-4 py-3"
+                                        key={item.product._id}
+                                    >
+
+                                        <img
+                                            src={item.product.images[0].url}
+                                            alt={item.product.name}
+                                            className="w-12 h-12 rounded-lg object-cover bg-gray-100 shrink-0"
+                                        />
+
+                                        <div className="flex-1 min-w-0">
+
+                                            <p className="text-sm text-gray-900 truncate">
+                                                {item.product.name} {item.product.quantity}{item.product.unit}
+                                            </p>
+
+                                            <p className="text-xs text-gray-500 mt-0.5">
+                                                ₨ {item.price.toLocaleString()} each
+                                            </p>
+
+                                            <div className="flex items-center justify-between gap-3 mt-2">
+
+                                                <QuantityStepper
+                                                    cartItem={item}
+                                                    size="sm"
+                                                    page="CheckoutPage"
+                                                />
+
+                                                <span className="text-sm font-semibold text-gray-900">
+                                                    ₨ {(item.quantity * item.price).toLocaleString()}
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                ))}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
-            )}
 
 
-            <div
-                style={{
-                    width: "100%",
-                    minHeight: "80px",
-                    marginTop: "20px",
-                }}
-            >
 
-                <safepay-card-atom
-                    ref={cardRef}
-                />
+                {/* =====================================================
+                    ORDER SUMMARY
+                ====================================================== */}
+
+                <div className="mt-3 lg:mt-0 lg:w-80">
+
+                    <div className="bg-white rounded-xl border border-gray-100 p-4 lg:sticky lg:top-20">
+
+                        <h2 className="text-sm font-semibold text-gray-900 mb-3">
+                            Amount Summary
+                        </h2>
+
+
+                        <div className="space-y-2 text-sm">
+
+                            <div className="flex justify-between text-gray-600">
+
+                                <span>
+                                    Total Quantity
+                                </span>
+
+                                <span>
+                                    {orderItems.reduce(
+                                        (total, item) => total + item.quantity,
+                                        0
+                                    )}
+                                </span>
+
+                            </div>
+
+
+                            <div className="flex justify-between text-gray-600">
+
+                                <span>
+                                    Amount (MRP)
+                                </span>
+
+                                <span>
+                                    ₨ {totalAmount.toLocaleString()}
+                                </span>
+
+                            </div>
+
+
+                            <div className="flex justify-between text-gray-600">
+
+                                <span>
+                                    Delivery Charges
+                                </span>
+
+                                <span>
+                                    ₨ 100
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="border-t border-gray-100 mt-3 pt-3 flex justify-between items-center">
+
+                            <span className="text-sm font-semibold text-gray-900">
+                                Net Payable
+                            </span>
+
+                            <span className="text-lg font-bold text-[#1F6F4A]">
+                                ₨ {(totalAmount + 100).toLocaleString()}
+                            </span>
+
+                        </div>
+
+
+                        {/* Order Summary Buttons */}
+                        <div className="mt-4 flex gap-2.5">
+
+                            {/* Continue Shopping */}
+                            <button
+                                type="button"
+                                onClick={continueShopping}
+                                disabled={disabled}
+                                className={`flex-1 min-w-0 px-2.5 text-xs sm:text-sm font-medium py-3 rounded-lg border transition-all duration-150 whitespace-nowrap ${
+                                    disabled
+                                        ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed"
+                                        : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 active:bg-gray-100"
+                                }`}
+                            >
+                                Continue Shopping
+                            </button>
+
+
+                            {/* Submit Order / Payment */}
+                            <button
+                                type="button"
+                                disabled={disabled}
+                                onClick={submitOrder}
+                                aria-busy={disabled}
+                                className={`flex-1 min-w-0 px-2.5 text-xs sm:text-sm font-medium py-3 rounded-lg transition-all duration-200 inline-flex items-center justify-center gap-2 whitespace-nowrap ${
+                                    disabled
+                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        : "bg-[#1F6F4A] text-white hover:bg-[#195a3b] active:bg-[#12442c] active:scale-[0.98]"
+                                }`}
+                            >
+
+                                {disabled && (
+                                    <svg
+                                        className="w-4 h-4 shrink-0 animate-spin"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        aria-hidden="true"
+                                    >
+                                        <circle
+                                            className="opacity-30"
+                                            cx="12"
+                                            cy="12"
+                                            r="9"
+                                            stroke="currentColor"
+                                            strokeWidth="3"
+                                        />
+
+                                        <path
+                                            className="opacity-90"
+                                            fill="currentColor"
+                                            d="M12 3a9 9 0 0 1 9 9h-3a6 6 0 0 0-6-6V3z"
+                                        />
+                                    </svg>
+                                )}
+
+                                <span className="truncate">
+                                    {getSubmitButtonText()}
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
-
-            {!cardReady && (
-
-                <p>
-                    Loading secure card form...
-                </p>
-            )}
-
-
-            {cardReady && (
-
-                <p
-                    style={{
-                        marginTop: "15px",
-                    }}
-                >
-                    Secure card form is ready.
-                </p>
-            )}
-
         </div>
-    );
+    )
 }
 
-
-export default CheckoutPage;
+export default CheckoutPage

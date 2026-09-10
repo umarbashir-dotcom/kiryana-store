@@ -5,8 +5,10 @@ import OrderReducer from "../reducers/OrderReducer"
 const initialState = {
     orderItems: [],
     orders: [],
+    userOrders: [],
     ordersLoading: true,
     totalOrders: 0,
+    totalUserOrders: 0,
     orderItemsCount: 0,
     success: false,
     loading: true,
@@ -45,7 +47,7 @@ const OrderProvider = ({children}) => {
     
     }
     
-    // get all order items
+    // get single order by id
     const getOrder = async () => {
         try{
             const data = await orderService.getOrder()
@@ -60,6 +62,21 @@ const OrderProvider = ({children}) => {
         }
     }
     
+    // get all orders of user
+    const getOrders = async () => {
+        try{
+            const data = await orderService.getOrders()
+            dispatch({
+                type: "SET_USER_ORDERS",
+                payload: data
+            })
+    
+            return data
+        } catch (err){
+            throw err
+        }
+    }
+
     // place order
     const placeOrder = async (orderData) => {
         const data = await orderService.placeOrder(orderData)
@@ -93,12 +110,15 @@ const OrderProvider = ({children}) => {
         orders: state.orders,
         totalOrders: state.totalOrders,
         ordersLoading: state.ordersLoading,
+        userOrders: state.userOrders,
+        totalUserOrders: state.totalUserOrders,
         setOrderItems,
         getOrder,
         placeOrder,
         deleteItemFromOrder,
         updateOrderItemQuantity,
-        getAllOrders
+        getAllOrders,
+        getOrders
     }}>
         {children}
     </OrderContext.Provider>)

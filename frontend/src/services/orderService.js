@@ -22,11 +22,11 @@ const orderService = {
             params.set("sort", query.sort)
         }
 
-        if(query.minAmount){
+        if(query.minAmount || Number(query.minAmount) === 0){
             params.set("minAmount", query.minAmount)
         }
 
-        if(query.maxAmount){
+        if(query.maxAmount ){
             params.set("maxAmount", query.maxAmount)
         }
 
@@ -112,6 +112,18 @@ const orderService = {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error)
         return data.order
+    },
+    getOrders: async() => {
+        const res = await fetch(`${import.meta.env.VITE_BASE_API}/orders/user`,
+            {
+                headers: {
+                    authorization: "Bearer " + localStorage.getItem("token") || ""
+                },
+            })
+
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error)
+        return data
     }
 }
 

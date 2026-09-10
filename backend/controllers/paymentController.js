@@ -28,6 +28,7 @@ const handle_webhook = async (req, res) => {
 
         if(order && order.paymentStatus !== "paid"){
             order.paymentStatus = "paid"
+            order.orderStatus = "confirmed"
             await order.save()
 
             await Payment.create({
@@ -86,8 +87,8 @@ const create_checkout_session = async (req, res) => {
             payment_method_types: ["card"],
             line_items,
             mode: "payment",
-            success_url: `https://kiryana-store-jet.vercel.app/order/checkout-success/${order._id}`,
-            cancel_url: `https://kiryana-store-jet.vercel.app/order/checkout-cancel/${order._id}`,
+            success_url: `https://kiryana-store-jet.vercel.app/checkout/checkout-success/${order._id}`,
+            cancel_url: `https://kiryana-store-jet.vercel.app/checkout/checkout-cancel/${order._id}`,
             metadata: { 
                 orderId: order._id.toString()
             }

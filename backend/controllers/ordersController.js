@@ -166,7 +166,7 @@ const createOrder = async (req, res) => {
             totalAmount: orderItems.reduce((total, item) => total + item.subtotal, 0),
             paymentMethod: paymentMethod.toLowerCase(),
             paymentStatus: "pending",
-            orderStatus: "confirmed"
+            orderStatus: paymentMethod.toLowerCase() === "cod" ? "confirmed" : "pending" 
         })
 
         // save order
@@ -218,4 +218,18 @@ const createOrder = async (req, res) => {
     })
 }
 
-export { getAllOrders, createOrder, getOrderById}
+const getUserOrders = async (req, res) => {
+    // get orders by user
+    let orders = await Order.find({user: req.user.id})
+
+    if(!orders){
+        res.status(404)
+        throw new Error("Orders not Found")
+    }
+
+    const totalOrders = await Order.countDocuments({user: req.user._id})
+    res.status(200).json({ orders: orders,
+        totalOrders
+    })
+}
+export { getAllOrders, createOrder, getOrderById, getUserOrders}

@@ -13,6 +13,13 @@ const OrderReducer = (state, action) => {
                 orderId: action.payload
                 // orderItemsCount: action.payload.reduce((acc, item) => acc + item.quantity, 0)
             }
+         case("SET_USER_ORDERS"):
+            return {
+                ...state,
+                userOrders: action.payload.orders,
+                totalUserOrders: action.payload.totalOrders,
+                ordersLoading: false
+            }
         case("SET_ORDER_ITEMS"):
             return {
                 ...state,

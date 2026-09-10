@@ -10,6 +10,7 @@ import { ProductsProvider } from "./context/ProductsContext"
 import { CategoriesProvider } from "./context/CategoriesContext"
 import { CartProvider } from "./context/CartContext"
 import { WishlistProvider } from "./context/WishlistContext"
+import { OrderProvider } from "./context/OrderContext"
 
 
 import ProtectedRoutes from './routes/ProtectedRoutes'
@@ -26,15 +27,15 @@ import SearchResultsPage from "./pages/SearchResultsPage"
 import ShopPage from "./pages/ShopPage"
 import CartPage from "./pages/CartPage"
 import WishlistPage from "./pages/WishlistPage"
-import OrderPage from "./pages/OrderPage"
-import { OrderProvider } from "./context/OrderContext"
-import AccountPage from "./pages/AccountPage"
 import CheckoutPage from "./pages/CheckoutPage"
+import AccountPage from "./pages/AccountPage"
 import OTPPage from "./pages/OTPPage"
 import ProfilePage from "./pages/ProfilePage"
+import OrdersPage from "./pages/OrdersPage"
 
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage"
 import CheckoutCancelPage from "./pages/CheckoutCancelPage"
+import BankTransferPage from "./pages/BankTransferPage"
 
 import AdminLayout from "./layouts/AdminLayout"
 import AdminDashboardPage from "./pages/AdminDashboardPage"
@@ -56,9 +57,11 @@ const router = createBrowserRouter(
           <Route path="/search/product/" element={<SearchResultsPage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/order" element={<OrderPage />} />
-          <Route path="/order/checkout-success/:orderId" element={<CheckoutSuccessPage />} />
-          <Route path="/order/checkout-cancel/:orderId" element={<CheckoutCancelPage />} />
+          <Route path="/account/orders" element={<OrdersPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/checkout/checkout-success/:orderId" element={<CheckoutSuccessPage />} />
+          <Route path="/checkout/checkout-cancel/:orderId" element={<CheckoutCancelPage />} />
+          <Route path="/checkout/bank-transfer/:orderId" element={<BankTransferPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/account/profile" element={<ProfilePage />} />
           <Route path="/wishlist" element={<WishlistPage />} />

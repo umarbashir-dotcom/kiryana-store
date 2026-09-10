@@ -156,7 +156,7 @@ const CartPage = () => {
             <button className="w-full mt-4 bg-[#1F6F4A] text-white text-sm font-medium py-3 rounded-lg hover:bg-[#195a3b] transition-colors"
               onClick={() => { 
                 setOrderItems(validItems.filter(item => selectedItems.includes(item.product._id) && item.quantity !== 0))
-                navigate("/order") }}>
+                navigate("/checkout") }}>
               Proceed to Checkout
             </button>
           </div>

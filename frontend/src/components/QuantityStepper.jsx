@@ -26,7 +26,7 @@ const QuantityStepper = ({
             }
             
             toast.success("Item removed from cart")
-            if(page === 'OrderPage'){
+            if(page === 'CheckoutPage'){
                 const items = orderItems.map(item => {
                     if(item.product._id === cartItem.product._id){
                         item.quantity -= 1
@@ -54,7 +54,7 @@ const QuantityStepper = ({
             await updateCartItemQuantity(cartItem.product._id, cartItem.quantity + 1)
 
             toast.success("Item added to cart")
-            if(page === 'OrderPage'){
+            if(page === 'CheckoutPage'){
                 const items = orderItems.map(item => {
                     if(item.product._id === cartItem.product._id){
                         item.quantity += 1

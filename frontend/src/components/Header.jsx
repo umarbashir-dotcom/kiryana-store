@@ -133,10 +133,10 @@ const Header = ({ onMenuClick, user }) => {
                                     <span>My Orders</span>
                                 </NavLink>
                                 {/* Addresses */}
-                                <NavLink to="/account/addresses" onClick={() => setAccountOpen(false)} className=" flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A] " >
+                                {/* <NavLink to="/account/addresses" onClick={() => setAccountOpen(false)} className=" flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A] " >
                                     <MapPin className="w-4 h-4" />
                                     <span>Addresses</span>
-                                </NavLink>
+                                </NavLink> */}
                                 {/* Settings */}
                                 {/* <NavLink to="/account/settings" onClick={() => setAccountOpen(false)} className=" flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#22281F]/80 transition hover:bg-[#F6F8F4] hover:text-[#1F6F4A] " >
                                     <Settings className="w-4 h-4" />
