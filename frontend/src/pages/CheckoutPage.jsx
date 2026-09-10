@@ -110,19 +110,19 @@ const CheckoutPage = () => {
             }
 
             // CARD PAYMENT 
-            if (paymentMethod === "card"){ 
+            if (paymentMethod === "card") {
                 const checkoutUrl = await orderService.createCheckoutSession(orderData.orderId)
                 window.location.href = checkoutUrl
-                return 
-            } 
+                return
+            }
 
             // BANK TRANSFER 
-            if (paymentMethod === "bank_transfer"){ 
-                navigate(`/checkout/bank-transfer/${orderData.orderId}`) 
-                return 
-            } 
-            
-        
+            if (paymentMethod === "bank_transfer") {
+                navigate(`/checkout/bank-transfer/${orderData.orderId}`)
+                return
+            }
+
+
             // COD
             return navigate(
                 `/checkout/checkout-success/${orderData.orderId}`
@@ -192,11 +192,10 @@ const CheckoutPage = () => {
                     type="button"
                     onClick={goBack}
                     disabled={disabled}
-                    className={`p-1 -ml-1 rounded-lg transition-colors ${
-                        disabled
-                            ? "text-gray-300 cursor-not-allowed"
-                            : "text-gray-500 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-200"
-                    }`}
+                    className={`p-1 -ml-1 rounded-lg transition-colors ${disabled
+                        ? "text-gray-300 cursor-not-allowed"
+                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-200"
+                        }`}
                     aria-label="Go back"
                 >
                     <svg
@@ -242,11 +241,10 @@ const CheckoutPage = () => {
                             type="button"
                             onClick={() => setShippingOpen(!shippingOpen)}
                             disabled={disabled}
-                            className={`w-full flex items-center justify-between px-4 py-3.5 transition-colors ${
-                                disabled
-                                    ? "cursor-not-allowed"
-                                    : "hover:bg-gray-50 active:bg-gray-100"
-                            }`}
+                            className={`w-full flex items-center justify-between px-4 py-3.5 transition-colors ${disabled
+                                ? "cursor-not-allowed"
+                                : "hover:bg-gray-50 active:bg-gray-100"
+                                }`}
                             aria-expanded={shippingOpen}
                         >
 
@@ -262,9 +260,8 @@ const CheckoutPage = () => {
                                 fill="none"
                                 stroke="currentColor"
                                 strokeWidth="2"
-                                className={`text-gray-400 transition-transform duration-200 ${
-                                    shippingOpen ? "rotate-180" : ""
-                                }`}
+                                className={`text-gray-400 transition-transform duration-200 ${shippingOpen ? "rotate-180" : ""
+                                    }`}
                             >
                                 <path d="m6 9 6 6 6-6" />
                             </svg>
@@ -291,11 +288,10 @@ const CheckoutPage = () => {
                                         type="text"
                                         placeholder="Enter your full name"
                                         disabled={disabled}
-                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${
-                                            disabled
-                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
-                                                : "border-gray-200 bg-white"
-                                        }`}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${disabled
+                                            ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                            : "border-gray-200 bg-white"
+                                            }`}
                                         value={shippingFormData.name}
                                         onChange={handleChange}
                                     />
@@ -324,11 +320,10 @@ const CheckoutPage = () => {
                                         type="tel"
                                         placeholder="03XX-XXXXXXX"
                                         disabled={disabled}
-                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${
-                                            disabled
-                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
-                                                : "border-gray-200 bg-white"
-                                        }`}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${disabled
+                                            ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                            : "border-gray-200 bg-white"
+                                            }`}
                                         value={shippingFormData.phone}
                                         onChange={handleChange}
                                     />
@@ -357,11 +352,10 @@ const CheckoutPage = () => {
                                         rows="2"
                                         placeholder="House #, Street, Area"
                                         disabled={disabled}
-                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] resize-none ${
-                                            disabled
-                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
-                                                : "border-gray-200 bg-white"
-                                        }`}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] resize-none ${disabled
+                                            ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                            : "border-gray-200 bg-white"
+                                            }`}
                                         value={shippingFormData.address}
                                         onChange={handleChange}
                                     ></textarea>
@@ -390,11 +384,10 @@ const CheckoutPage = () => {
                                         type="text"
                                         placeholder="e.g. Faisalabad"
                                         disabled={disabled}
-                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${
-                                            disabled
-                                                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
-                                                : "border-gray-200 bg-white"
-                                        }`}
+                                        className={`w-full px-3 py-2.5 text-sm rounded-lg border text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1F6F4A]/30 focus:border-[#1F6F4A] ${disabled
+                                            ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                                            : "border-gray-200 bg-white"
+                                            }`}
                                         value={shippingFormData.city}
                                         onChange={handleChange}
                                     />
@@ -419,11 +412,10 @@ const CheckoutPage = () => {
                             type="button"
                             onClick={() => setPaymentOpen(!paymentOpen)}
                             disabled={disabled}
-                            className={`w-full flex items-center justify-between px-4 py-3.5 transition-colors ${
-                                disabled
-                                    ? "cursor-not-allowed"
-                                    : "hover:bg-gray-50 active:bg-gray-100"
-                            }`}
+                            className={`w-full flex items-center justify-between px-4 py-3.5 transition-colors ${disabled
+                                ? "cursor-not-allowed"
+                                : "hover:bg-gray-50 active:bg-gray-100"
+                                }`}
                             aria-expanded={paymentOpen}
                         >
 
@@ -439,9 +431,8 @@ const CheckoutPage = () => {
                                 fill="none"
                                 stroke="currentColor"
                                 strokeWidth="2"
-                                className={`text-gray-400 transition-transform duration-200 ${
-                                    paymentOpen ? "rotate-180" : ""
-                                }`}
+                                className={`text-gray-400 transition-transform duration-200 ${paymentOpen ? "rotate-180" : ""
+                                    }`}
                             >
                                 <path d="m6 9 6 6 6-6" />
                             </svg>
@@ -464,15 +455,13 @@ const CheckoutPage = () => {
 
                                         {/* Cash on Delivery */}
                                         <label
-                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${
-                                                disabled
-                                                    ? "cursor-not-allowed opacity-60"
-                                                    : "cursor-pointer"
-                                            } ${
-                                                paymentMethod === "cod"
+                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${disabled
+                                                ? "cursor-not-allowed opacity-60"
+                                                : "cursor-pointer"
+                                                } ${paymentMethod === "cod"
                                                     ? "border-[#1F6F4A] bg-[#1F6F4A]/5"
                                                     : "border-gray-100 hover:bg-gray-50"
-                                            }`}
+                                                }`}
                                         >
 
                                             <input
@@ -557,15 +546,13 @@ const CheckoutPage = () => {
 
                                         {/* Debit / Credit Card */}
                                         <label
-                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${
-                                                disabled
-                                                    ? "cursor-not-allowed opacity-60"
-                                                    : "cursor-pointer"
-                                            } ${
-                                                paymentMethod === "card"
+                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${disabled
+                                                ? "cursor-not-allowed opacity-60"
+                                                : "cursor-pointer"
+                                                } ${paymentMethod === "card"
                                                     ? "border-[#1F6F4A] bg-[#1F6F4A]/5"
                                                     : "border-gray-100 hover:bg-gray-50"
-                                            }`}
+                                                }`}
                                         >
 
                                             <input
@@ -639,15 +626,13 @@ const CheckoutPage = () => {
 
                                         {/* Bank Transfer */}
                                         <label
-                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${
-                                                disabled
-                                                    ? "cursor-not-allowed opacity-60"
-                                                    : "cursor-pointer"
-                                            } ${
-                                                paymentMethod === "bank_transfer"
+                                            className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-colors ${disabled
+                                                ? "cursor-not-allowed opacity-60"
+                                                : "cursor-pointer"
+                                                } ${paymentMethod === "bank_transfer"
                                                     ? "border-[#1F6F4A] bg-[#1F6F4A]/5"
                                                     : "border-gray-100 hover:bg-gray-50"
-                                            }`}
+                                                }`}
                                         >
 
                                             <input
@@ -888,13 +873,13 @@ const CheckoutPage = () => {
 
 
 
-                {/* =====================================================
-                    ORDER SUMMARY
+                {/*  =====================================================
+                ORDER SUMMARY
                 ====================================================== */}
 
-                <div className="mt-3 lg:mt-0 lg:w-80">
+                <div className="mt-3 lg:mt-0 lg:w-96">
 
-                    <div className="bg-white rounded-xl border border-gray-100 p-4 lg:sticky lg:top-20">
+                    <div className="bg-white rounded-xl border border-gray-100 p-5 lg:sticky lg:top-20">
 
                         <h2 className="text-sm font-semibold text-gray-900 mb-3">
                             Amount Summary
@@ -961,18 +946,17 @@ const CheckoutPage = () => {
 
 
                         {/* Order Summary Buttons */}
-                        <div className="mt-4 flex gap-2.5">
+                        <div className="mt-4 flex flex-col sm:flex-row gap-2.5">
 
                             {/* Continue Shopping */}
                             <button
                                 type="button"
                                 onClick={continueShopping}
                                 disabled={disabled}
-                                className={`flex-1 min-w-0 px-2.5 text-xs sm:text-sm font-medium py-3 rounded-lg border transition-all duration-150 whitespace-nowrap ${
-                                    disabled
+                                className={`flex-1 inline-flex items-center justify-center px-4 text-sm font-medium py-3 rounded-lg border transition-all duration-150 ${disabled
                                         ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed"
                                         : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 active:bg-gray-100"
-                                }`}
+                                    }`}
                             >
                                 Continue Shopping
                             </button>
@@ -984,13 +968,11 @@ const CheckoutPage = () => {
                                 disabled={disabled}
                                 onClick={submitOrder}
                                 aria-busy={disabled}
-                                className={`flex-1 min-w-0 px-2.5 text-xs sm:text-sm font-medium py-3 rounded-lg transition-all duration-200 inline-flex items-center justify-center gap-2 whitespace-nowrap ${
-                                    disabled
+                                className={`flex-1 inline-flex items-center justify-center gap-2 px-4 text-sm font-medium py-3 rounded-lg transition-all duration-200 ${disabled
                                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                         : "bg-[#1F6F4A] text-white hover:bg-[#195a3b] active:bg-[#12442c] active:scale-[0.98]"
-                                }`}
+                                    }`}
                             >
-
                                 {disabled && (
                                     <svg
                                         className="w-4 h-4 shrink-0 animate-spin"
@@ -1006,7 +988,6 @@ const CheckoutPage = () => {
                                             stroke="currentColor"
                                             strokeWidth="3"
                                         />
-
                                         <path
                                             className="opacity-90"
                                             fill="currentColor"
@@ -1015,21 +996,17 @@ const CheckoutPage = () => {
                                     </svg>
                                 )}
 
-                                <span className="truncate">
-                                    {getSubmitButtonText()}
-                                </span>
-
+                                {getSubmitButtonText()}
                             </button>
 
                         </div>
-
                     </div>
 
                 </div>
 
-            </div>
+            </div >
 
-        </div>
+        </div >
     )
 }
 
