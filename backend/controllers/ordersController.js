@@ -220,12 +220,13 @@ const createOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
     // get orders by user
-    let orders = await Order.find({user: req.user.id})
+    let orders = await Order.find({user: req.user.id}).sort({created_at: -1, _id: -1})
 
     if(!orders){
         res.status(404)
         throw new Error("Orders not Found")
     }
+
 
     const totalOrders = await Order.countDocuments({user: req.user._id})
     res.status(200).json({ orders: orders,
