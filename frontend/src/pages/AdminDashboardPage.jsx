@@ -9,9 +9,13 @@ import {
     Clock3,
     ChevronRight,
 } from "lucide-react";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom"
 
 const AdminDashboardPage = () => {
-    
+    const { user } = useContext(AuthContext)
+
     return (
         <div className="space-y-6">
             {/* Page Introduction */}
@@ -23,7 +27,7 @@ const AdminDashboardPage = () => {
                         </p>
 
                         <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                            Good afternoon, Admin
+                            Good afternoon, {user.name}
                         </h1>
 
                         <p className="mt-1.5 text-sm text-slate-500">
@@ -37,7 +41,11 @@ const AdminDashboardPage = () => {
                         </p>
 
                         <p className="mt-1 text-sm font-semibold text-slate-700">
-                            August 29, 2026
+                            { new Date(Date.now()).toLocaleDateString("en-US",{
+                                year: "numeric",
+                                day: "numeric",
+                                month: "long",
+                            })}
                         </p>
                     </div>
                 </div>
@@ -178,8 +186,8 @@ const AdminDashboardPage = () => {
                             </p>
                         </div>
 
-                        <a
-                            href="#"
+                        <Link
+                            to="/admin/orders"
                             className="
                                 flex items-center gap-1
                                 text-xs font-semibold
@@ -189,7 +197,7 @@ const AdminDashboardPage = () => {
                         >
                             View all
                             <ChevronRight size={14} />
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Desktop Table */}
