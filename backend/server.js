@@ -28,6 +28,10 @@ await connectDB()
 // cors middleware
 app.use(cors())
 
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
+});
+
 // Production deployment is behind Render's reverse proxy
 app.set("trust proxy", 1);
 
