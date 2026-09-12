@@ -60,7 +60,7 @@ const Header = ({ onMenuClick, user }) => {
 
                 {/* <!-- Brand --> */}
                 <NavLink to="/" className="font-['Fraunces'] font-semibold text-lg text-[#1F6F4A] shrink-0">
-                    Apna Kiryana
+                    Rana Tariq Store
                 </NavLink>
 
                 {/* <!-- Search bar — visible inline on desktop, icon-only trigger on mobile --> */}
