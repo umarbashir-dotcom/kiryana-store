@@ -28,9 +28,6 @@ await connectDB()
 // cors middleware
 app.use(cors())
 
-app.get("/health", (req, res) => {
-    res.status(200).send("OK");
-});
 
 // Production deployment is behind Render's reverse proxy
 app.set("trust proxy", 1);
@@ -43,10 +40,13 @@ app.use(express.json())
 // body parser middleware
 app.use(express.urlencoded({extended: false}))
 
-
 // logger middleware
 app.use(logger)
 
+// health endpoint for monitoring this site and keepint it up
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
+});
 app.use("/auth", OTPRoutes)
 
 // static file server
